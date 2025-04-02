@@ -6,7 +6,7 @@ const dataSource = new DataSource ({
     port: 5432,
     username: "postgres",
     database: "postgres",
-    entities: [__dirname + "/db/entities/*.js"],
+    entities: [__dirname + "/entities/*.js"],
     synchronize: true,
   });
 
