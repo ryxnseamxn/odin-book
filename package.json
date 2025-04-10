@@ -4,9 +4,9 @@
   "description": "odin-book project",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start:server": "npm run start --workspace=server",
-    "start:client": "npm run start --workspace=client"
+    "start:client": "npm run start --workspace=client",
+    "build:client": "npm run build --workspace=client"
   },
   "private": "true",
   "workspaces": [

@@ -10,10 +10,20 @@ const loginRouter = require("./routes/loginRouter");
 const homeRouter = require("./routes/homeRouter");
 const signUpRouter = require("./routes/signUpRouter");
 
+const allowedOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(',')
+  : ['http://localhost:3000'];
+
 app.use(cors({
-  origin: [
-    'http://localhost:3000'
-  ],
+  origin: (origin, callback) => {
+    
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 
