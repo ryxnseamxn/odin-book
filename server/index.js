@@ -8,6 +8,7 @@ const dataSource = require("./db/dataSource");
 const auth = require("./middleware/authenticate");
 const loginRouter = require("./routes/loginRouter");
 const homeRouter = require("./routes/homeRouter");
+const signUpRouter = require("./routes/signUpRouter");
 
 app.use(cors({
   origin: [
@@ -23,6 +24,7 @@ auth.setupAuth(app);
 
 app.use(loginRouter); 
 app.use(homeRouter);
+app.use(signUpRouter);
 
 app.listen(3001, async () => {
     try {

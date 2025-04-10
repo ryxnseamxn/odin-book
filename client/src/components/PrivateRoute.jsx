@@ -1,30 +1,32 @@
-// src/components/PrivateRoute.jsx
 import React, { useState, useEffect } from 'react';
-import Unauthenticated from '../views/Unauthenticated';
+import Unauthenticated from './Unauthenticated';
 
 const PrivateRoute = ({ children }) => {
   const [auth, setAuth] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_URL}/`, {
-      credentials: 'include'
-    })
-      .then((res) => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/`, {
+          credentials: 'include',
+        });
+
         if (res.status === 401) {
           throw new Error('Unauthorized');
         }
-        return res.json();
-      })
-      .then((data) => {
+
+        const data = await res.json();
         setAuth(data.user);
-        setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error(error);
         setAuth(null);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    checkAuth();
   }, []);
 
   if (loading) return <div>Loading...</div>;

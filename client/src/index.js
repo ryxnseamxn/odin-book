@@ -4,9 +4,10 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import './styles/index.css';
-import App from './views/App';
-import Login from './views/login';
-import PrivateRoute from './views/PrivateRoute';
+import App from './components/Home';
+import Login from './components/Login';
+import PrivateRoute from './components/PrivateRoute';
+import SignUp from './components/SignUp';
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
   {
     path: '/login',
     element: <Login />
+  },
+  {
+    path: '/signup',
+    element: <SignUp />
   }
 ]);
 
