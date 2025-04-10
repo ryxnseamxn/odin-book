@@ -5,6 +5,5 @@ COPY server/package.json ./server/
 RUN npm install --only=production
 COPY server/ ./server/
 WORKDIR /app/server
-ENV NODE_ENV=production
 EXPOSE 3000
 CMD ["node", "index.js"]

@@ -1,4 +1,5 @@
 exports.login = (req, res) => {
+    console.log("Endpoint reached");
     res.status(200).json({
       message: "Login successful",
       user: {

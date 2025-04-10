@@ -23,6 +23,7 @@ const config = env === 'production'
         username: process.env.DB_USERNAME,
         database: process.env.DB_DATABASE,
         synchronize: process.env.DB_SYNCHRONIZE === 'true',
+        password: process.env.DB_PASSWORD
     };
 
 const dataSource = new DataSource(config);

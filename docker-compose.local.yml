@@ -1,0 +1,44 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    environment:
+      - NODE_ENV=development
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - PASSPORT_SECRET=${PASSPORT_SECRET}
+      - DB_SSL=false
+      - DB_SYNCHRONIZE=${DB_SYNCHRONIZE}
+      - DB_HOST=postgres
+      - DB_PORT=${DB_PORT}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_DATABASE=${DB_DATABASE}
+    ports:
+      - "3000:3000"  
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15  
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE}
+    ports:
+      - "5432:5432"  
+    volumes:
+      - postgres-data:/var/lib/postgresql/data  
+
+  client:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+      args:
+        - REACT_APP_API_URL=${REACT_APP_API_URL}
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+volumes:
+  postgres-data:
