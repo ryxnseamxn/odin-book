@@ -3,7 +3,7 @@ FROM node:22 AS builder
 WORKDIR /app
 COPY package*.json ./
 COPY client/package.json ./client/
-RUN npm install
+RUN npm ci
 COPY client/ ./client/
 WORKDIR /app/client
 ARG REACT_APP_API_URL
