@@ -1,9 +1,9 @@
 FROM node:18
 WORKDIR /app
-COPY package*.json ./
-COPY server/package.json ./server/
-RUN npm ci --only=production
-COPY server/ ./server/
-WORKDIR /app/server
-EXPOSE 3000
+COPY package.json .
+COPY package-lock.json .
+RUN npm ci
+COPY . .
+WORKDIR /app
+EXPOSE 3001
 CMD ["node", "index.js"]
