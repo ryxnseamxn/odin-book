@@ -1,8 +1,8 @@
 services:
   server:
     build:
-      context: .
-      dockerfile: server/Dockerfile
+      context: ./server
+      dockerfile: Dockerfile
     environment:
       - NODE_ENV=development
       - CORS_ORIGIN=${CORS_ORIGIN}
@@ -15,7 +15,7 @@ services:
       - DB_USERNAME=${DB_USERNAME}
       - DB_DATABASE=${DB_DATABASE}
     ports:
-      - "3000:3000"  
+      - "3001:3001"  
     depends_on:
       - postgres
 
@@ -32,12 +32,12 @@ services:
 
   client:
     build:
-      context: .
-      dockerfile: client/Dockerfile
+      context: ./client
+      dockerfile: Dockerfile
       args:
-        - REACT_APP_API_URL=${REACT_APP_API_URL}
+        - REACT_APP_API_URL=http://localhost:3001
     ports:
-      - "80:80"
+      - "3000:3000"
     depends_on:
       - server
 volumes:
