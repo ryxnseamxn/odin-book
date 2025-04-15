@@ -33,8 +33,9 @@ app.use(loginRouter);
 app.use(homeRouter);
 app.use(signUpRouter);
 
-app.listen(3000, async () => {
+app.listen(3001, async () => {
     try {
+  
       await dataSource.initialize();
       console.log("App listening on port 3000!");
     } catch (error) {

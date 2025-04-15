@@ -48,6 +48,8 @@ const Login = () => {
                 credentials: 'include'
             });
             
+            console.log(`${Object.entries(process.env)}`);
+
             if (response.ok) {
                 setFormData({ username: '', password: '' });
                 navigate('/');
