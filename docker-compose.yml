@@ -8,11 +8,10 @@ services:
       - CORS_ORIGIN=${CORS_ORIGIN}
       - PASSPORT_SECRET=${PASSPORT_SECRET}
       - DB_SSL=false
-      - DB_SYNCHRONIZE=${DB_SYNCHRONIZE}
-      - DB_HOST=postgres
-      - DB_PORT=${DB_PORT}
-      - DB_PASSWORD=${DB_PASSWORD}
+      - DATABASE_URL_LOCAL=postgres
+      - DATABASE_PORT=${DATABASE_PORT}
       - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
       - DB_DATABASE=${DB_DATABASE}
     ports:
       - "3001:3001"  
@@ -35,7 +34,9 @@ services:
       context: ./client
       dockerfile: Dockerfile
       args:
-        - REACT_APP_API_URL=http://localhost:3001
+        - REACT_APP_API_URL=${REACT_APP_API_URL}
+        - REACT_APP_API_URL_PRODUCTION=${REACT_APP_API_URL_PRODUCTION}
+        - NODE_ENV=development
     ports:
       - "3000:3000"
     depends_on:

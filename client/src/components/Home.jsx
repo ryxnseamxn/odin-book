@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FriendsList from './FriendsList';
+import { apiUrl } from '../config';
+
 
 const Home = () => {
   const [user, setUser] = useState(null);
@@ -12,7 +14,7 @@ const Home = () => {
     const fetchUserData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/user`, {
+        const response = await fetch(`${apiUrl}/user`, {
           method: 'GET',
           credentials: 'include',
           headers: {

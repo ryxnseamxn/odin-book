@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Unauthenticated from './Unauthenticated';
+import { apiUrl } from '../config';
+
 
 const PrivateRoute = ({ children }) => {
   const [auth, setAuth] = useState(null);
@@ -8,7 +10,7 @@ const PrivateRoute = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/`, {
+        const res = await fetch(`${apiUrl}/`, {
           credentials: 'include',
         });
 

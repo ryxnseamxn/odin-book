@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiUrl } from '../config';
 
 const FriendsList = ({ searchQuery }) => {
   const [friends, setFriends] = useState([]);
@@ -14,7 +15,7 @@ const FriendsList = ({ searchQuery }) => {
   const fetchFriends = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/friends`, {
+      const response = await fetch(`${apiUrl}/friends`, {
         method: 'GET',
         credentials: 'include',
         headers: {

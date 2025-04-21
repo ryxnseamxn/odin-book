@@ -20,5 +20,4 @@ export class CreateTables1744690154317 implements MigrationInterface {
         await queryRunner.query(`DROP TABLE "Friends"`);
         await queryRunner.query(`DROP TABLE "Users"`);
     }
-
 }

@@ -1,23 +1,21 @@
+const path = require('path');
 const { DataSource } = require('typeorm');
-require('dotenv').config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
 
 const env = process.env.NODE_ENV || 'development';
 
-// Extract connection details from the DB_HOST connection string if in production
 let connectionOptions = {};
-if (env === 'production' && process.env.DB_HOST && process.env.DB_HOST.startsWith('postgresql://')) {
-  // We're manually parsing the connection string
+if (env === 'production') {
   connectionOptions = {
-    url: process.env.DB_HOST,
+    url: process.env.DATABASE_URL,
     type: 'postgres',
     ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
   };
+
 } else {
-  // Development mode or if DB_HOST isn't a connection string
   connectionOptions = {
     type: 'postgres',
-    host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT, 10),
+    host: process.env.DATABASE_URL_LOCAL,
+    port: process.env.DATABASE_PORT,
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
@@ -27,11 +25,9 @@ if (env === 'production' && process.env.DB_HOST && process.env.DB_HOST.startsWit
 const config = {
   ...connectionOptions,
   entities: [__dirname + '/entities/*.js'],
-  migrations: [__dirname + '/migrations/*.js'],
-  migrationsTableName: 'migrations',
-  synchronize: process.env.DB_SYNCHRONIZE === 'true',
+  migrations: [path.join(__dirname, 'migrations', '*.js')],
+  synchronize: env === 'development',
 };
 
 const dataSource = new DataSource(config);
-
-module.exports = dataSource;
+module.exports = dataSource; 

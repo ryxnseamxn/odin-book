@@ -1,41 +1,42 @@
-FROM node:22 AS build
-
-ARG REACT_APP_API_URL
+FROM node:22
 
 # Set config
 ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 ENV NPM_CONFIG_FUND=false
-ENV REACT_APP_API_URL=https://server-production-d3e4.up.railway.app
-# Create and change to the app directory.
+
+# Create and change to the app directory
 WORKDIR /app
 
-# Copy the files to the container image
-COPY package.json .
-COPY package-lock.json .
+# Copy package files
+COPY package.json package-lock.json ./
 
-# Install packages
+# Install dependencies
 RUN npm ci
 
-# Copy local code to the container image.
+# Copy source code
 COPY . .
 
-# Build the app.
-RUN npm run build
+# Create entrypoint script
+RUN echo '#!/bin/sh\n\
+# Build with environment variables available at runtime\n\
+npm run build\n\
+\n\
+# Start Caddy to serve the built app\n\
+caddy run --config Caddyfile --adapter caddyfile\n\
+' > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
 
-# Use the Caddy image
-FROM caddy
+# Install Caddy
+RUN apt-get update && apt-get install -y curl && \
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/caddy-stable-archive-keyring.gpg] https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main" | tee /etc/apt/sources.list.d/caddy-stable.list && \
+    apt-get update && \
+    apt-get install -y caddy && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Create and change to the app directory.
-WORKDIR /app
-
-# Copy Caddyfile to the container image.
+# Copy Caddyfile
 COPY Caddyfile .
-
-# Copy local code to the container image.
 RUN caddy fmt Caddyfile --overwrite
 
-# Copy files to the container image.
-COPY --from=build /app/build ./build    
-
-# Use Caddy to run/serve the app
-CMD ["caddy", "run", "--config", "Caddyfile", "--adapter", "caddyfile"]
+# Set the entrypoint
+ENTRYPOINT ["/app/entrypoint.sh"]
