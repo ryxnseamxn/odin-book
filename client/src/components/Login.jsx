@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import Alert from './Alert'; // We'll create this component next
+import Alert from './Alert'; 
+import { apiUrl } from '../config';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -17,7 +18,6 @@ const Login = () => {
     useEffect(() => {
         if (location.state && location.state.alert) {
             setAlert(location.state.alert);
-            // Clean up location state to prevent showing alert on refresh
             window.history.replaceState({}, document.title);
         }
     }, [location]);
@@ -36,7 +36,7 @@ const Login = () => {
         setIsLoading(true);
         
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
+            const response = await fetch(`${apiUrl}/login`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
@@ -47,8 +47,6 @@ const Login = () => {
                 }),
                 credentials: 'include'
             });
-            
-            console.log(`${Object.entries(process.env)}`);
 
             if (response.ok) {
                 setFormData({ username: '', password: '' });

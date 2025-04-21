@@ -10,22 +10,16 @@ const loginRouter = require("./routes/loginRouter");
 const homeRouter = require("./routes/homeRouter");
 const signUpRouter = require("./routes/signUpRouter");
 
+const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim()) : [];
+
 app.use(cors({
-  origin: function(origin, callback) {
-    
-    const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
-    
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: allowedOrigins,
   credentials: true
 }));
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+
 
 auth.setupAuth(app);
 
@@ -35,9 +29,9 @@ app.use(signUpRouter);
 
 app.listen(3001, async () => {
     try {
-  
+      console.log(process.env.CORS_ORIGIN)
       await dataSource.initialize();
-      console.log("App listening on port 3000!");
+      console.log("App listening on port 3001!");
     } catch (error) {
       console.error("Error during Data Source initialization", error);
     }
