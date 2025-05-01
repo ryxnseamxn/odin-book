@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Alert from './Alert'; 
 import { apiUrl } from '../config';
 
@@ -14,7 +14,6 @@ const Login = () => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    // Check for alert info from signup success
     useEffect(() => {
         if (location.state && location.state.alert) {
             setAlert(location.state.alert);
@@ -34,7 +33,7 @@ const Login = () => {
         e.preventDefault();
         setError('');
         setIsLoading(true);
-        
+
         try {
             const response = await fetch(`${apiUrl}/login`, {
                 method: "POST",
@@ -64,80 +63,90 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8">
-                {alert && (
-                    <Alert 
-                        message={alert.message} 
-                        type={alert.type}
-                        onClose={() => setAlert(null)}
-                    />
-                )}
-                
-                <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        Sign in to your account
-                    </h2>
-                    <p className="mt-2 text-center text-sm text-gray-600">
-                        Or{' '}
-                        <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-500">
-                            create a new account
-                        </Link>
-                    </p>
+        <div className="min-h-screen flex flex-col bg-gray-100">
+            {/* Header */}
+            <div className="bg-yellow-400 p-4 shadow-md">
+                <div className="flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
+                        <svg className="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"></path>
+                        </svg>
+                    </div>
+                    <h1 className="ml-3 text-xl font-bold text-white">Login</h1>
                 </div>
-                
-                <form className="mt-8 space-y-6" onSubmit={submit}>
-                    {error && (
-                        <div className="rounded-md bg-red-50 p-4">
-                            <div className="flex">
-                                <div className="ml-3">
-                                    <h3 className="text-sm font-medium text-red-800">
-                                        {error}
-                                    </h3>
-                                </div>
-                            </div>
-                        </div>
+            </div>
+            
+            <div className="flex-1 flex items-center justify-center p-6">
+                <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
+                    {alert && (
+                        <Alert 
+                            message={alert.message} 
+                            type={alert.type}
+                            onClose={() => setAlert(null)}
+                        />
                     )}
                     
-                    <div className="rounded-md shadow-sm -space-y-px">
-                        <div>
-                            <label htmlFor="username" className="sr-only">Username</label>
-                            <input
-                                id="username"
-                                name="username"
+                    <form onSubmit={submit}>
+                        <h1 className="text-2xl font-bold mb-6 text-center">
+                            Sign in to your account
+                        </h1>
+                        
+                        {error && (
+                            <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+                                <p>{error}</p>
+                            </div>
+                        )}
+                        
+                        <div className="mb-4">
+                            <label htmlFor="username" className="block text-gray-700 mb-2">Username: </label>
+                            <input 
                                 type="text"
-                                required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                                placeholder="Username"
+                                name="username"
+                                id="username"
                                 value={formData.username}
                                 onChange={handleChange}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-400 focus:border-yellow-400"
+                                required
                             />
                         </div>
-                        <div>
-                            <label htmlFor="password" className="sr-only">Password</label>
+                        
+                        <div className="mb-6">
+                            <label htmlFor="password" className="block text-gray-700 mb-2">Password: </label>
                             <input
-                                id="password"
-                                name="password"
                                 type="password"
-                                required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                                placeholder="Password"
+                                name="password"
+                                id="password"
                                 value={formData.password}
                                 onChange={handleChange}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-400 focus:border-yellow-400"
+                                required
                             />
                         </div>
-                    </div>
 
-                    <div>
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                        >
-                            {isLoading ? 'Signing in...' : 'Sign in'}
-                        </button>
-                    </div>
-                </form>
+                        <div className="mb-4">
+                            <button 
+                                type="submit"
+                                disabled={isLoading}
+                                className="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            >
+                                {isLoading ? 'Signing in...' : 'Sign in'}
+                            </button>
+                        </div>
+                        
+                        <div className="text-center">
+                            <p className="text-sm text-gray-600">
+                                Don't have an account?{' '}
+                                <button 
+                                    type="button" 
+                                    onClick={() => navigate('/signup')} 
+                                    className="font-medium text-yellow-500 hover:text-yellow-600"
+                                >
+                                    Create one now
+                                </button>
+                            </p>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     );

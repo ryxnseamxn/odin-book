@@ -4,31 +4,42 @@ services:
       context: ./server
       dockerfile: Dockerfile
     environment:
+      - API_URL=${API_URL}
       - NODE_ENV=development
       - CORS_ORIGIN=${CORS_ORIGIN}
       - PASSPORT_SECRET=${PASSPORT_SECRET}
       - DB_SSL=false
-      - DATABASE_URL_LOCAL=postgres
-      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_URL_LOCAL=postgres 
+      - DATABASE_PORT=${DATABASE_PORT} 
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_DATABASE=${DB_DATABASE}
+      
+      - MINIO_ENDPOINT=minio         
+      - MINIO_PORT=9000              
+      - MINIO_ACCESS_KEY=${MINIO_ROOT_USER} 
+      - MINIO_SECRET_KEY=${MINIO_ROOT_PASSWORD} 
+      - MINIO_DEFAULT_BUCKET=${MINIO_DEFAULT_BUCKET} 
     ports:
-      - "3001:3001"  
+      - "3001:3001"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_started 
+      minio:
+        condition: service_healthy 
 
   postgres:
-    image: postgres:15  
+    image: postgres:15
     environment:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_DATABASE}
     ports:
-      - "5432:5432"  
+      
+      - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data  
-
+      - postgres-data:/var/lib/postgresql/data
+    
   client:
     build:
       context: ./client
@@ -36,10 +47,36 @@ services:
       args:
         - REACT_APP_API_URL=${REACT_APP_API_URL}
         - REACT_APP_API_URL_PRODUCTION=${REACT_APP_API_URL_PRODUCTION}
-        - NODE_ENV=development
+        - REACT_APP_ENVIRONMENT=development
+    environment:
+      
+      - REACT_APP_API_URL=${REACT_APP_API_URL}
+      - REACT_APP_API_URL_PRODUCTION=${REACT_APP_API_URL_PRODUCTION}
+      - REACT_APP_ENVIRONMENT=development
     ports:
       - "3000:3000"
     depends_on:
       - server
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio_storage 
+    command: server /data --console-address ":9001" 
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_DEFAULT_BUCKET=${MINIO_DEFAULT_BUCKET}
+    ports:
+      - "9000:9000"  
+      - "9001:9001"  
+    volumes:
+      - minio-data:/data 
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
 volumes:
   postgres-data:
+  minio-data: 
