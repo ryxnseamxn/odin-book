@@ -1,11 +1,11 @@
 Odin-Book
 A social media application inspired by Snapchat, built as part of The Odin Project's Odin-Book assignment. This project implements a simplified photo-sharing app with a focus on user interaction and media storage.
 <div align="center">
-  <img src="docs/preview (1).webp" width="100vw">
+  <img src="docs/preview (1).webp">
 </div>
 
 <div align="center">
-  <img src="docs/preview.webp" width="100vw">
+  <img src="docs/preview.webp">
 </div>
 
 The screenshot above shows the application running in a Railway environment, with services like the server, client, Postgres database, and MinIO storage all operational.
