@@ -4,18 +4,21 @@ import { apiUrl } from '../config';
 
 const FriendsList = ({ searchQuery }) => {
   const [friends, setFriends] = useState([]);
+  const [pendingSnaps, setPendingSnaps] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchFriends();
+    fetchFriendsAndSnaps();
   }, []);
 
-  const fetchFriends = async () => {
+  const fetchFriendsAndSnaps = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`${apiUrl}/friends`, {
+      
+      // Fetch friends list
+      const friendsResponse = await fetch(`${apiUrl}/friends`, {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -23,18 +26,37 @@ const FriendsList = ({ searchQuery }) => {
         },
       });
 
-      if (!response.ok) {
-        if (response.status === 401) {
+      if (!friendsResponse.ok) {
+        if (friendsResponse.status === 401) {
           navigate('/login');
           return;
         }
         throw new Error('Failed to fetch friends');
       }
 
-      const data = await response.json();
-      setFriends(data);
+      const friendsData = await friendsResponse.json();
+      setFriends(friendsData);
+
+      const snapsResponse = await fetch(`${apiUrl}/pending-snaps`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (snapsResponse.ok) {
+        const snapsData = await snapsResponse.json();
+        
+        const pendingSnapsMap = {};
+        snapsData.forEach(snap => {
+          pendingSnapsMap[snap.sender.id] = (pendingSnapsMap[snap.sender.id] || 0) + 1;
+        });
+        
+        setPendingSnaps(pendingSnapsMap);
+      }
     } catch (err) {
-      console.error('Error fetching friends:', err);
+      console.error('Error fetching data:', err);
       setError('Failed to load friends. Please try again.');
     } finally {
       setIsLoading(false);
@@ -47,7 +69,7 @@ const FriendsList = ({ searchQuery }) => {
     }
     
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/remove-friend`, {
+      const response = await fetch(`${apiUrl}/remove-friend`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -72,6 +94,13 @@ const FriendsList = ({ searchQuery }) => {
     }
   };
 
+  const navigateToSnapFriend = (friend) => {
+    navigate('/snap-friend', { state: { friend } });
+  };
+  
+  const navigateToViewSnaps = (friend) => {
+    navigate('/view-snaps', { state: { friendId: friend.id } });
+  };
   
   const filteredFriends = searchQuery
     ? friends.filter(friend => 
@@ -92,7 +121,7 @@ const FriendsList = ({ searchQuery }) => {
       <div className="p-4 text-center text-red-500">
         <p>{error}</p>
         <button 
-          onClick={fetchFriends}
+          onClick={fetchFriendsAndSnaps}
           className="mt-2 px-4 py-2 bg-yellow-400 text-white rounded-md"
         >
           Try Again
@@ -142,18 +171,48 @@ const FriendsList = ({ searchQuery }) => {
             </div>
             <div className="ml-4">
               <h3 className="font-medium">{friend.username}</h3>
+              {pendingSnaps[friend.id] && (
+                <p className="text-xs text-yellow-500 font-medium">
+                  {pendingSnaps[friend.id]} new {pendingSnaps[friend.id] === 1 ? 'snap' : 'snaps'}
+                </p>
+              )}
             </div>
           </div>
           
           <div className="flex space-x-2">
+            {/* New Snap button */}
             <button
-              onClick={() => { /* Implement chat functionality */ }}
-              className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
+              onClick={() => navigateToSnapFriend(friend)}
+              className="p-2 rounded-full bg-yellow-100 hover:bg-yellow-200"
+              aria-label="Send snap"
             >
-              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+              <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
               </svg>
             </button>
+            
+            {/* Chat/Snap button - changes based on pending snaps */}
+            <button
+              onClick={() => pendingSnaps[friend.id] ? navigateToViewSnaps(friend) : null}
+              className={`p-2 rounded-full ${
+                pendingSnaps[friend.id] 
+                  ? 'bg-yellow-400 hover:bg-yellow-500' 
+                  : 'bg-gray-100 hover:bg-gray-200'
+              }`}
+              aria-label={pendingSnaps[friend.id] ? "View pending snaps" : "Chat"}
+            >
+              {pendingSnaps[friend.id] ? (
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.12.23-2.18.65-3.15C5.53 8.95 6.15 9 6.8 9c.96 0 1.73-.27 2.3-.82.37-.36.65-.85.82-1.38.17-.53.17-1.08.17-1.6 0-.35.12-.65.35-.83.23-.19.54-.29.85-.29.43 0 .79.18 1.04.53.25.35.33.78.33 1.29 0 .52 0 1.07.17 1.6.17.53.44 1.02.82 1.38.57.55 1.34.82 2.3.82.65 0 1.27-.05 1.87-.15.42.97.65 2.03.65 3.15 0 4.41-3.59 8-8 8z"/>
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                </svg>
+              )}
+            </button>
+            
             <button
               onClick={() => removeFriend(friend.id)}
               className="p-2 rounded-full bg-gray-100 hover:bg-red-100"

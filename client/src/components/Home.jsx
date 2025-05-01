@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import FriendsList from './FriendsList';
 import { apiUrl } from '../config';
 
-
 const Home = () => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,14 +44,26 @@ const Home = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch(`${process.env.REACT_APP_API_URL}/logout`, {
+      const response = await fetch(`${apiUrl}/logout`, {
         method: 'POST',
         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
+      
+      if (!response.ok) {
+        throw new Error('Logout failed');
+      }
+      
       navigate('/login');
     } catch (error) {
       console.error('Error logging out:', error);
     }
+  };
+
+  const handleSnapClick = () => {
+    navigate('/select-friend'); // Navigate to the SelectFriend component
   };
 
   if (isLoading) {
@@ -80,13 +91,14 @@ const Home = () => {
             </div>
             <h1 className="ml-3 text-xl font-bold text-white">My Friends</h1>
           </div>
-          <div className="flex space-x-2">
-            <button className="p-2 rounded-full bg-white">
-              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
-              </svg>
-            </button>
-          </div>
+          <button
+            onClick={handleLogout}
+            className="p-2 rounded-full bg-white text-red-500"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+          </button>
         </div>
       </div>
       
@@ -113,51 +125,18 @@ const Home = () => {
         <FriendsList searchQuery={searchQuery} />
       </div>
       
-      {/* Bottom Navigation */}
-      <div className="bg-white p-4 shadow-t-sm border-t border-gray-200">
-        <div className="flex justify-between">
-          <button className="p-2 text-center w-1/5">
-            <svg className="w-6 h-6 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-            </svg>
-            <span className="text-xs text-gray-500">Home</span>
-          </button>
-          <button className="p-2 text-center w-1/5">
-            <svg className="w-6 h-6 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-            </svg>
-            <span className="text-xs text-gray-500">Friends</span>
-          </button>
-          <button className="p-2 text-center w-1/5 relative">
-            <div className="w-14 h-14 rounded-full bg-yellow-400 flex items-center justify-center mx-auto -mt-8 border-4 border-white shadow-lg">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              </svg>
-            </div>
-          </button>
-          <button className="p-2 text-center w-1/5">
-            <svg className="w-6 h-6 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
-            </svg>
-            <span className="text-xs text-gray-500">Stories</span>
-          </button>
-          <button className="p-2 text-center w-1/5">
-            <svg className="w-6 h-6 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-            </svg>
-            <span className="text-xs text-gray-500">Profile</span>
-          </button>
-        </div>
+      {/* Simplified Bottom Navigation - Only Snap Button */}
+      <div className="bg-white p-4 shadow-t-sm border-t border-gray-200 flex justify-center">
+        <button 
+          onClick={handleSnapClick}
+          className="w-16 h-16 rounded-full bg-yellow-400 flex items-center justify-center shadow-lg"
+        >
+          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+        </button>
       </div>
-      
-      {/* Hidden logout button */}
-      <button 
-        onClick={handleLogout}
-        className="fixed bottom-20 right-4 bg-red-500 text-white p-2 rounded-full shadow-lg z-50 opacity-0 hover:opacity-100 transition-opacity"
-      >
-        Logout
-      </button>
     </div>
   );
 };

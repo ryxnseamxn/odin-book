@@ -1,6 +1,14 @@
 FROM node:22
 
 # Set config
+ARG REACT_APP_API_URL
+ARG REACT_APP_API_URL_PRODUCTION
+ARG REACT_APP_ENVIRONMENT
+
+# Set as environment variables for React to use
+ENV REACT_APP_API_URL=${REACT_APP_API_URL}
+ENV REACT_APP_API_URL_PRODUCTION=${REACT_APP_API_URL_PRODUCTION}
+ENV REACT_APP_ENVIRONMENT=${REACT_APP_ENVIRONMENT}
 ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 ENV NPM_CONFIG_FUND=false
 
@@ -16,8 +24,12 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Create entrypoint script
+# Create entrypoint script - build at runtime to access environment variables
 RUN echo '#!/bin/sh\n\
+# Print environment variables for debugging (optional)\n\
+echo "Building with REACT_APP_API_URL=$REACT_APP_API_URL"\n\
+echo "Building with REACT_APP_ENVIRONMENT=$REACT_APP_ENVIRONMENT"\n\
+\n\
 # Build with environment variables available at runtime\n\
 npm run build\n\
 \n\

@@ -8,6 +8,9 @@ import Login from './components/Login';
 import PrivateRoute from './components/PrivateRoute';
 import SignUp from './components/SignUp';
 import AddFriends from './components/AddFriends';
+import SnapFriend from './components/SnapFriend';
+import ViewSnap from './components/ViewSnap';
+import SelectFriend from './components/SelectFriend';
 
 const router = createBrowserRouter([
   {
@@ -23,6 +26,30 @@ const router = createBrowserRouter([
     element: (
       <PrivateRoute>
         <AddFriends />
+      </PrivateRoute>
+    )
+  },
+  {
+    path: "/snap-friend",
+    element: (
+      <PrivateRoute>
+        <SnapFriend />
+      </PrivateRoute>
+    )
+  },
+  {
+    path: "/select-friend",
+    element: (
+      <PrivateRoute>
+        <SelectFriend />
+      </PrivateRoute>
+    )
+  },
+  {
+    path: "/view-snaps",
+    element: (
+      <PrivateRoute>
+        <ViewSnap />
       </PrivateRoute>
     )
   },
