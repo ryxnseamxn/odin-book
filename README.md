@@ -4,6 +4,9 @@ A social media application inspired by Snapchat, built as part of The Odin Proje
   <img src="docs/preview (1).webp">
 </div>
 
+
+
+
 <div align="center">
   <img src="docs/preview.webp">
 </div>
@@ -35,6 +38,6 @@ $ Start the application using Docker Compose:docker compose up
 ```
 
 
-Ensure you have Docker and Docker Compose installed on your system. The application will be available at http://localhost:3000 for the client and http://localhost:3001 for the server.
-Live Demo
-Check out the live demo of the application [here](https://odin-book.up.railway.app/) 
+Ensure you have Docker and Docker Compose installed on your system. The application will be available at http://localhost:3000 for the client and http://localhost:3001 for the server after running with Docker Compose. 
+
+App is hosted [here](https://odin-book.up.railway.app/) 
