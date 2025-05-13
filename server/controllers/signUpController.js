@@ -1,3 +1,4 @@
+const bcrypt = require("bcryptjs"); 
 const dataSource = require("../db/dataSource");
 const User = require("../db/entities/User")
 const userRepository = dataSource.getRepository(User);
@@ -5,6 +6,7 @@ const userRepository = dataSource.getRepository(User);
 exports.signUp = async (req, res) => {
     try {
         const { username, password } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10); 
 
         let result = await userRepository
             .createQueryBuilder()
@@ -13,7 +15,7 @@ exports.signUp = async (req, res) => {
             .values(
                 {
                     username: username,
-                    password: password
+                    password: hashedPassword
                 }
             )
             .execute();
@@ -22,6 +24,7 @@ exports.signUp = async (req, res) => {
             result: result
         });
     } catch (error) {
+        console.log(error); 
         res.status(500).json({
             message: "Sign up failed",
             error: error 
